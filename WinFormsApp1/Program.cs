@@ -5,11 +5,25 @@ namespace StudentForm
 
     class Student //the student model
     {
-        private int id { get; set; }
         private string name { get; set; }
         private DateTime dob { get; set; }
         private StudyProgram studyProgram { get; set; }
 
+    }
+
+    class StudentList
+    {
+        private HashSet<Student> students { get; }
+
+        public void AddStudent(Student student)
+        {
+            students.Add(student);
+        }
+
+        public void DeleteStudent(Student student)
+        {
+            students.Remove(student);
+        }
     }
 
     internal static class Program
@@ -20,8 +34,6 @@ namespace StudentForm
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
             Application.Run(new MainForm());
         }
