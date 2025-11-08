@@ -1,28 +1,53 @@
+using System.Text.Json;
+
 namespace StudentForm
 {
 
-   public enum StudyProgram {IT, HISTORY, CHEMISTRY, PEDAGOGICS }
+    public enum StudyProgram { IT, HISTORY, CHEMISTRY, PEDAGOGICS }
 
-    class Student //the student model
+    class Student // student model
     {
-        private string name { get; set; }
-        private DateTime dob { get; set; }
-        private StudyProgram studyProgram { get; set; }
+        public string Name { get; set; }
+        public DateTime DoB { get; set; }
+        public StudyProgram StudyProgram { get; set; }
 
+        public Student(string name, DateTime dob, StudyProgram studyProgram)
+        {
+            this.Name = name;
+            this.DoB = dob;
+            this.StudyProgram = studyProgram;
+        }
+
+        public Student() { }
     }
 
-    class StudentList
+    class StudentCollection // student set - a structure that saves information about all the students and
+                            // also saves the information to a JSON file
     {
-        private HashSet<Student> students { get; }
+        public List<Student> Students { get; set; }
 
         public void AddStudent(Student student)
         {
-            students.Add(student);
+            Students.Add(student);
         }
 
         public void DeleteStudent(Student student)
         {
-            students.Remove(student);
+            Students.Remove(student);
+        }
+
+        public StudentCollection()
+        {
+            Students = new List<Student>();
+        }
+
+        public void SaveChanges()
+        {
+            string fileName = "Students.json";
+            string jsonString = JsonSerializer.Serialize(Students);
+            File.WriteAllText(fileName, jsonString);
+            Console.WriteLine(jsonString);
+
         }
     }
 
@@ -36,6 +61,7 @@ namespace StudentForm
         {
             ApplicationConfiguration.Initialize();
             Application.Run(new MainForm());
+
         }
     }
 }
