@@ -7,12 +7,19 @@ namespace StudentForm
     public partial class MainForm : Form
     {
         StudentCollection StudentCollection;
-        StudyProgram StudyProgram;
+     
         public MainForm()
         {
             InitializeComponent();
             StudentCollection = new StudentCollection();
-            StudentCollection.Students = JsonSerializer.Deserialize<List<Student>>(File.ReadAllText("Students.json"));
+            try
+            {
+                StudentCollection.Students = JsonSerializer.Deserialize<List<Student>>(File.ReadAllText("Students.json"));
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("The .json file has not been deserialised successfully.", "Error", MessageBoxButtons.OK);
+            }
 
         }
 
@@ -25,21 +32,21 @@ namespace StudentForm
             studyProgramComboBox.Items.Add(StudyProgram.CHEMISTRY);
             studyProgramComboBox.Items.Add(StudyProgram.PEDAGOGICS);
             studyProgramComboBox.SelectedIndex = 0;
-            dataGridView1.DataSource = StudentCollection.Students;
+            dataGridView.DataSource = StudentCollection.Students;
 
 
 
 
         }
 
-        private void saveButton_Click(object sender, EventArgs e)
+        private void addStudent_Click(object sender, EventArgs e)
         {
             try
             {
                 Student student = new Student(nameTextBox.Text, Convert.ToDateTime(dobDateTimePicker.Value.Date), (StudyProgram)studyProgramComboBox.SelectedItem);
                 StudentCollection.AddStudent(student);
-                dataGridView1.DataSource = null;
-                dataGridView1.DataSource = StudentCollection.Students;
+                dataGridView.DataSource = null;
+                dataGridView.DataSource = StudentCollection.Students;
             }
             catch (Exception)
             {
@@ -48,17 +55,43 @@ namespace StudentForm
 
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
+            dataGridView.Select();
+        }
+
+
+
+
+        private void saveChangesButton_Click(object sender, EventArgs e)
+        {
+            string fileName = "Students.json";
+            string jsonString = JsonSerializer.Serialize(StudentCollection.Students);
+            File.WriteAllText(fileName, jsonString);
 
         }
 
         private void saveAndExitButton_Click(object sender, EventArgs e)
         {
             string fileName = "Students.json";
-            string jsonString = JsonSerializer.Serialize(StudentCollection);
+            string jsonString = JsonSerializer.Serialize(StudentCollection.Students);
             File.WriteAllText(fileName, jsonString);
-            
+            Application.Exit();
+        }
+
+        private void deleteStudentButton_Click(object sender, EventArgs e)
+        {
+            int selectedRowCount = dataGridView.Rows.GetRowCount(DataGridViewElementStates.Selected);
+            if (selectedRowCount > 0)
+            {
+                for (int i = 0; i < selectedRowCount; i++)
+                {
+                    StudentCollection.Students.RemoveAt(dataGridView.SelectedRows[0].Index);
+                   
+                }
+            }
+            dataGridView.DataSource = null;
+            dataGridView.DataSource = StudentCollection.Students;
         }
     }
 }

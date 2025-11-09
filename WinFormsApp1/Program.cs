@@ -24,7 +24,7 @@ namespace StudentForm
     class StudentCollection // student set - a structure that saves information about all the students and
                             // also saves the information to a JSON file
     {
-        public List<Student> Students { get; set; }
+        public List<Student>? Students { get; set; }
 
         public void AddStudent(Student student)
         {
